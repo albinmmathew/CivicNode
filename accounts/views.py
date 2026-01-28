@@ -1,3 +1,63 @@
-from django.shortcuts import render
+from django.shortcuts import render ,redirect
 
 # Create your views here.
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.contrib.auth import authenticate, login  as auth_login
+
+#for registering user
+def register(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
+
+        if password1 != password2:
+            messages.error(request, "Passwords do not match")
+            return redirect('register')
+
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect('register')
+
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password1
+        )
+
+        messages.success(request, "Account created successfully. Please log in.")
+        return redirect('login')
+
+    return render(request, 'accounts/register.html')
+
+#for logging in registered users to respective dashboards
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            auth_login(request, user)
+
+			# if user is supperuser then redirects to admin page
+            if user.is_superuser:
+                return redirect('/admin/')
+
+            role = user.profile.role
+
+            if role == 3:
+                return redirect('/admin/')
+            elif role == 2:
+                return redirect('/dashboard/staff/')
+            else:
+                return redirect('/dashboard/citizen/')
+
+        else:
+            messages.error(request, "Invalid username or password")
+            return redirect('login')
+
+    return render(request, 'accounts/login.html')
