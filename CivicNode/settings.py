@@ -57,7 +57,7 @@ ROOT_URLCONF = 'CivicNode.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],	#for checkinng templates in root
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
