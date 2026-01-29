@@ -5,22 +5,35 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login  as auth_login
 
-#for registering user
+# For registering user
 def register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         email = request.POST.get('email')
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
-
+        
+        # Checking for blank entries
+        if not username or not email or not password1 or not password2:
+            messages.error(request, "All fields are required")
+            return redirect('register')
+        
+		# Ensuring password matches
         if password1 != password2:
             messages.error(request, "Passwords do not match")
             return redirect('register')
 
+		# Ensuring Unique User
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists")
             return redirect('register')
+        
+		# Ensuring one User per Email
+        if User.objects.filter(email=email).exists():
+            messages.error(request, "Email already exists")
+            return redirect('register')
 
+		# Creating User
         user = User.objects.create_user(
             username=username,
             email=email,
