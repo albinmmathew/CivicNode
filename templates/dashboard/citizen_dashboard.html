@@ -8,11 +8,16 @@
 <body>
 
     <h2>Citizen Dashboard</h2>
+	<nav>
+        <a href="/dashboard/citizen/">Dashboard</a>
+        <a href="/issues/raise/">Raise Issue</a>
 
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit">Logout</button>
-    </form>
+        <!-- Logout must be POST -->
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </nav>
 
 </body>
 </html>
