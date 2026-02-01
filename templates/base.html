@@ -9,9 +9,8 @@
 
     <!-- COMMON -->
     <nav style="padding:10px; background:#eee;">
-        <b>CivicNode</b> |
-
-        <a href="/issues/">Issues</a> |
+		<!-- Style to create a normal text like hyper link -->
+        <b><a href = "/" style="text-decoration:none; color:black;">CivicNode</a></b> |
 
         {% if user.is_authenticated %}
             {% if user.profile.role > 1 %}
@@ -23,6 +22,10 @@
             {% if user.profile.role == 3 %}
                 <a href="/admin/">Admin</a> |
             {% endif %}
+
+			<a href="/issues/">Issues</a> |
+
+			<a href="/issues/raise/">Raise Issue</a>
 
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
