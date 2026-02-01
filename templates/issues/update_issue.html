@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Issue</title>
+</head>
+<body>
+    <h2>Update Issue Status</h2>
+
+    <h3>{{ issue.title }}</h3>
+    <p>{{ issue.description }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Status:</label>
+        <select name="status">
+            <option value="PENDING" {% if issue.status == 'PENDING' %}selected{% endif %}>Pending</option>
+            <option value="IN_PROGRESS" {% if issue.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
+            <option value="RESOLVED" {% if issue.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
+        </select>
+
+        <br><br>
+
+        <label>Remarks:</label><br>
+        <textarea name="remarks">{{ issue.remarks }}</textarea>
+
+        <br><br>
+        <button type="submit">Update Issue</button>
+    </form>
+</body>
+</html>
