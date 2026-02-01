@@ -23,6 +23,8 @@ All Civic Issues
         <p><b>Posted on:</b> {{ issue.created_at }}</p>
 
         {% if user.profile.role > 1 %}
+			<p><b>Assigned to:</b> {{ issue.assigned_to }}</p>
+
             <a href="{% url 'update_issue' issue.id %}">Update Status</a>
         {% endif %}
 

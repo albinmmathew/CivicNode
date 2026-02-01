@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Issue, Category
 from django.contrib import messages
+from django.contrib.auth.models import User
+
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
