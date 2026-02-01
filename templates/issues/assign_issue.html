@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Issue</title>
+</head>
+<body>
+    <h2>Assign Issue</h2>
+
+    <h3>{{ issue.title }}</h3>
+    <p>{{ issue.description }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label>Select Staff:</label>
+        <select name="staff" required>
+            <option value="">-- Choose Staff --</option>
+            {% for staff in staff_users %}
+                <option value="{{ staff.id }}">
+                    {{ staff.username }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <br><br>
+        <button type="submit">Assign</button>
+    </form>
+</body>
+</html>

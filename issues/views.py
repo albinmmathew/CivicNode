@@ -61,3 +61,32 @@ def update_issue_status(request, issue_id):
         return redirect('issue_list')
 
     return render(request, 'issues/update_issue.html', {'issue': issue})
+
+@login_required
+def assign_issue(request, issue_id):
+    issue = get_object_or_404(Issue, id=issue_id)
+
+    # 🔐 Admin-only check
+    if not (request.user.is_superuser or request.user.profile.role == 3):
+        return HttpResponseForbidden("Only admin can assign issues")
+
+    staff_users = User.objects.filter(profile__role__gte=2)
+
+    if request.method == 'POST':
+        staff_id = request.POST.get('staff')
+        staff_user = User.objects.get(id=staff_id)
+
+        issue.assigned_to = staff_user
+        issue.save()
+
+        messages.success(request, "Issue assigned successfully")
+        return redirect('issue_list')
+
+    return render(
+        request,
+        'issues/assign_issue.html',
+        {
+            'issue': issue,
+            'staff_users': staff_users
+        }
+    )

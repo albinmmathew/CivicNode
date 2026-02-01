@@ -29,6 +29,9 @@
 			{% if user.profile.role > 1 %}
     			<a href="{% url 'update_issue' issue.id %}">Update Status</a>
 			{% endif %}
+			{% if user.profile.role == 3 %}
+			    <a href="{% url 'assign_issue' issue.id %}">Assign Issue</a>
+			{% endif %}
 
         </div>
     {% empty %}
