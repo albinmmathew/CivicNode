@@ -29,7 +29,7 @@ def raise_issue(request):
 		)
 
 		messages.success(request,"Issue raised succesfully")
-		return redirect('/dashboard/citizen/')
+		return redirect('/')
 	
 	return render(request,'issues/raise_issue.html',{'categories': categories})
 

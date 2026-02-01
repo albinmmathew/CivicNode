@@ -57,17 +57,15 @@ def user_login(request):
             auth_login(request, user)
 
 			# if user is supperuser then redirects to admin page
-            if user.is_superuser:
-                return redirect('/admin/')
+            #if user.is_superuser:
+            #    return redirect('/admin/')
 
             role = user.profile.role
 
-            if role == 3:
-                return redirect('/admin/')
-            elif role == 2:
-                return redirect('/dashboard/staff/')
+            if role > 2:
+                return redirect('/staff/')
             else:
-                return redirect('/dashboard/citizen/')
+                return redirect('/')
 
         else:
             messages.error(request, "Invalid username or password")
