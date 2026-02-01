@@ -1,33 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Update Issue</title>
-</head>
-<body>
-    <h2>Update Issue Status</h2>
+{% extends "base.html" %}
 
+{% block title %}
+Update Issue
+{% endblock %}
+
+{% block content %}
+<h2>Update Issue Status</h2>
+
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:15px;">
     <h3>{{ issue.title }}</h3>
     <p>{{ issue.description }}</p>
+</div>
 
-    <form method="post">
-        {% csrf_token %}
+<form method="post">
+    {% csrf_token %}
 
-        <label>Status:</label>
-        <select name="status">
-            <option value="PENDING" {% if issue.status == 'PENDING' %}selected{% endif %}>Pending</option>
-            <option value="IN_PROGRESS" {% if issue.status == 'IN_PROGRESS' %}selected{% endif %}>In Progress</option>
-            <option value="RESOLVED" {% if issue.status == 'RESOLVED' %}selected{% endif %}>Resolved</option>
-        </select>
+    <label for="status">Status:</label><br>
+    <select name="status" id="status">
+        <option value="PENDING" {% if issue.status == 'PENDING' %}selected{% endif %}>
+            Pending
+        </option>
+        <option value="IN_PROGRESS" {% if issue.status == 'IN_PROGRESS' %}selected{% endif %}>
+            In Progress
+        </option>
+        <option value="RESOLVED" {% if issue.status == 'RESOLVED' %}selected{% endif %}>
+            Resolved
+        </option>
+    </select>
 
-        <br><br>
+    <br><br>
 
-        <label>Remarks:</label><br>
-        <textarea name="remarks">{{ issue.remarks }}</textarea>
+    <label for="remarks">Remarks:</label><br>
+    <textarea name="remarks" id="remarks">{{ issue.remarks }}</textarea>
 
-        <br><br>
-        <button type="submit">Update Issue</button>
-    </form>
-</body>
-</html>
+    <br><br>
+    <button type="submit">Update Issue</button>
+</form>
+{% endblock %}

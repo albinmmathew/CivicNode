@@ -1,24 +1,14 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citizen Dashboard</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-    <h2>Citizen Dashboard</h2>
-	<nav>
-        <a href="/dashboard/citizen/">Dashboard</a> | 
-        <a href="/issues/raise/">Raise Issue</a> | 
-        <a href="/issues/">Issue List</a> | 
+{% block title %}Citizen Dashboard{% endblock %}
 
-        <!-- Logout must be POST -->
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
-    </nav>
+{% block content %}
+<h2>Citizen Dashboard</h2>
 
-</body>
-</html>
+<p>Welcome, {{ user.username }}</p>
+
+<ul>
+    <li><a href="/issues/raise/">Raise an Issue</a></li>
+    <li><a href="/issues/">View All Issues</a></li>
+</ul>
+{% endblock %}
