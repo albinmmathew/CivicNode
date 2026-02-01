@@ -47,6 +47,9 @@ class Issue(models.Model):
 
 	created_at = models.DateTimeField(auto_now_add=True)
 
+	remarks = models.TextField(blank=True)
+
+
 	def is_emergency(self):
 		return self.category.is_emergency
 	
