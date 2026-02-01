@@ -29,3 +29,10 @@ def raise_issue(request):
 		return redirect('/dashboard/citizen/')
 	
 	return render(request,'issues/raise_issue.html',{'categories': categories})
+
+@login_required
+def issue_list(request):
+    issues = Issue.objects.select_related('category', 'created_by') \
+        .order_by('-category__is_emergency', '-created_at')
+
+    return render(request, 'issues/issue_list.html', {'issues': issues})
