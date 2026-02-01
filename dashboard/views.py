@@ -6,8 +6,10 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def citizen_dashboard(request):
-    return render(request, 'dashboard/citizen_dashboard.html')
+    role = request.user.profile.role
+    return render(request, 'dashboard/citizen_dashboard.html', {'role': role})
 
 @login_required
 def staff_dashboard(request):
-    return HttpResponse("Staff Dashboard")
+    role = request.user.profile.role
+    return render(request, 'dashboard/staff_dashboard.html', {'role': role})

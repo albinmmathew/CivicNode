@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CivicNode{% endblock %}</title>
+</head>
+<body>
+
+    <!-- COMMON -->
+    <nav style="padding:10px; background:#eee;">
+		<!-- Style to create a normal text like hyper link -->
+        <b><a href = "/" style="text-decoration:none; color:black;">CivicNode</a></b> |
+
+        {% if user.is_authenticated %}
+            {% if user.profile.role > 1 %}
+                <a href="/staff/">Staff Dashboard</a> |
+            {% else %}
+                <a href="/">Dashboard</a> |
+            {% endif %}
+
+            {% if user.profile.role == 3 %}
+                <a href="/admin/">Admin</a> |
+            {% endif %}
+
+			<a href="/issues/">Issues</a> |
+
+			<a href="/issues/raise/">Raise Issue</a>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    </nav>
+
+    <hr>
+
+    <!-- 🔷 PAGE CONTENT -->
+    {% block content %}
+    {% endblock %}
+
+</body>
+</html>

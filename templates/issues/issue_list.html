@@ -1,41 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Civic Issues</title>
-</head>
-<body>
-    <h2>Public Civic Issues</h2>
+{% extends "base.html" %}
 
-    <a href="{% url 'raise_issue' %}">Raise New Issue</a> | 
-	<a href="/dashboard/citizen/">Dashboard</a> | 
-    <hr>
+{% block title %}
+All Civic Issues
+{% endblock %}
 
-    {% for issue in issues %}
-        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-            <h3>
-                {{ issue.title }}
-                {% if issue.is_emergency %}
-                    <span style="color:red;">🚨 Emergency</span>
-                {% endif %}
-            </h3>
+{% block content %}
+<h2>Civic Issues List</h2>
 
-            <p><b>Category:</b> {{ issue.category.name }}</p>
-            <p><b>Location:</b> {{ issue.location }}</p>
-            <p><b>Status:</b> {{ issue.get_status_display }}</p>
-            <p><b>Reported by:</b> {{ issue.created_by.username }}</p>
-            <p><b>Posted on:</b> {{ issue.created_at }}</p>
-			{% if user.profile.role > 1 %}
-    			<a href="{% url 'update_issue' issue.id %}">Update Status</a>
-			{% endif %}
-			{% if user.profile.role == 3 %}
-			    <a href="{% url 'assign_issue' issue.id %}">Assign Issue</a>
-			{% endif %}
+{% for issue in issues %}
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+        <h3>
+            {{ issue.title }}
+            {% if issue.is_emergency %}
+                <span style="color:red;">🚨 Emergency</span>
+            {% endif %}
+        </h3>
 
-        </div>
-    {% empty %}
-        <p>No issues reported yet.</p>
-    {% endfor %}
-</body>
-</html>
+        <p><b>Category:</b> {{ issue.category.name }}</p>
+        <p><b>Location:</b> {{ issue.location }}</p>
+        <p><b>Status:</b> {{ issue.get_status_display }}</p>
+        <p><b>Reported by:</b> {{ issue.created_by.username }}</p>
+        <p><b>Posted on:</b> {{ issue.created_at }}</p>
+
+        {% if user.profile.role > 1 %}
+            <a href="{% url 'update_issue' issue.id %}">Update Status</a>
+        {% endif %}
+
+        {% if user.profile.role == 3 %}
+            | <a href="{% url 'assign_issue' issue.id %}">Assign Issue</a>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>No issues reported yet.</p>
+{% endfor %}
+{% endblock %}
