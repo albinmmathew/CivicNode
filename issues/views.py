@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.contrib.auth.decorators import login_required
-from .models import Issue, Category
+from .models import Issue, Category, Upvote
 from django.contrib import messages
 from django.contrib.auth.models import User
-
+from django.db import IntegrityError
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponseForbidden
@@ -92,3 +92,18 @@ def assign_issue(request, issue_id):
             'staff_users': staff_users
         }
     )
+
+@login_required
+def upvote_issue(request, issue_id):
+    issue = get_object_or_404(Issue, id=issue_id)
+
+    try:
+        Upvote.objects.create(
+            user=request.user,
+            issue=issue
+        )
+        messages.success(request, "You upvoted this issue")
+    except IntegrityError:
+        messages.warning(request, "You have already upvoted this issue")
+
+    return redirect('issue_list')
