@@ -49,9 +49,24 @@ class Issue(models.Model):
 
 	remarks = models.TextField(blank=True)
 
-
 	def is_emergency(self):
 		return self.category.is_emergency
 	
 	def __str__(self):
 		return self.title
+	
+	def upvote_count(self):
+	    return self.upvote_set.count()
+
+
+	
+class Upvote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'issue')
+
+    def __str__(self):
+        return f"{self.user.username} upvoted {self.issue.title}"

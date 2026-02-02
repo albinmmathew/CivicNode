@@ -23,12 +23,23 @@ All Civic Issues
         <p><b>Posted on:</b> {{ issue.created_at }}</p>
 
         {% if user.profile.role > 1 %}
+			<p><b>Assigned to:</b> {{ issue.assigned_to }}</p>
+
             <a href="{% url 'update_issue' issue.id %}">Update Status</a>
         {% endif %}
 
         {% if user.profile.role == 3 %}
             | <a href="{% url 'assign_issue' issue.id %}">Assign Issue</a>
         {% endif %}
+
+		<p>
+			⭐ {{ issue.upvote_count }} upvotes
+		</p>
+		
+		<form method="post" action="{% url 'upvote_issue' issue.id %}">
+			{% csrf_token %}
+			<button type="submit">Upvote</button>
+		</form>
     </div>
 {% empty %}
     <p>No issues reported yet.</p>
