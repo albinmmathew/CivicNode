@@ -4,43 +4,163 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CivicNode{% endblock %}</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		/* Navbar link hover */
+		.navbar .nav-link {
+			position: relative;
+			transition: color 0.2s ease;
+		}
+	
+		.navbar .nav-link:hover {
+			color: #0d6efd; /* Bootstrap primary blue */
+		}
+	
+		/* Button hover smoothness */
+		.navbar .btn {
+			transition: all 0.2s ease-in-out;
+		}
+	
+		.navbar .btn:hover {
+			transform: translateY(-1px);
+		}
+	
+		/* Optional underline animation */
+		.navbar .nav-link::after {
+			content: "";
+			position: absolute;
+			width: 0;
+			height: 2px;
+			left: 0;
+			bottom: 0;
+			background-color: #0d6efd;
+			transition: width 0.2s ease;
+		}
+	
+		.navbar .nav-link:hover::after {
+			width: 100%;
+		}
+	</style>
+	
 </head>
 <body>
 
-    <!-- COMMON -->
-    <nav style="padding:10px; background:#eee;">
-		<!-- Style to create a normal text like hyper link -->
-        <b><a href = "/" style="text-decoration:none; color:black;">CivicNode</a></b> |
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+		<div class="container">
+	
+			<!-- Brand -->
+			<a class="navbar-brand fw-bold" href="{% url 'issue_list' %}">
+				CivicNode
+			</a>
+	
+			<!-- Mobile toggle -->
+			<button class="navbar-toggler" type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarContent">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+	
+			<!-- Navbar content -->
+			<div class="collapse navbar-collapse" id="navbarContent">
+				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+	
+					{% if user.is_authenticated %}
+	
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'issue_list' %}">Issues</a>
+						</li>
+	
+						<li class="nav-item">
+							<a class="nav-link" href="{% url 'raise_issue' %}">Raise Issue</a>
+						</li>
+	
+						{% if user.profile.role > 1 %}
+							<li class="nav-item">
+								<a class="nav-link" href="{% url 'staff' %}">Staff Dashboard</a>
+							</li>
+						{% endif %}
+	
+						{% if user.profile.role == 3 %}
+							<li class="nav-item">
+								<a class="nav-link" href="% url 'admin' %">Admin</a>
+							</li>
+						{% endif %}
+	
+					{% endif %}
+				</ul>
+	
+				<!-- Right side -->
+				<ul class="navbar-nav ms-auto">
+	
+					{% if user.is_authenticated %}
+					<li class="nav-item d-flex align-items-center">
+						<span class="nav-link text-muted me-2">Hi, {{ user.username }}</span>
+					</li>
+					
+					<li class="nav-item d-flex align-items-center">
+						<form method="post" action="{% url 'logout' %}">
+							{% csrf_token %}
+							<button class="btn btn-outline-danger btn-sm">Logout</button>
+						</form>
+					</li>					
+					
+					{% else %}
+					<li class="nav-item d-flex align-items-center">
+						<a class="btn btn-outline-primary btn-sm" href="{% url 'login' %}">Login</a>
+					</li>
+					
+					<li class="nav-item d-flex align-items-center ms-2">
+						<a class="btn btn-primary btn-sm" href="{% url 'register' %}"> Start for Free</a>
+					</li>
+					
+					{% endif %}
+				</ul>
+			</div>
+		</div>
+	</nav>
+	
+	{% if messages %}
+		<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
+			{% for message in messages %}
+				<div class="toast align-items-center text-bg-{{ message.tags }} border-0 mb-2"
+					role="alert"
+					aria-live="assertive"
+					aria-atomic="true"
+					data-bs-delay="3000">
 
-        {% if user.is_authenticated %}
-            {% if user.profile.role > 1 %}
-                <a href="/staff/">Staff Dashboard</a> |
-            {% else %}
-                <a href="/">Dashboard</a> |
-            {% endif %}
+					<div class="d-flex">
+						<div class="toast-body">
+							{{ message }}
+						</div>
+						<button type="button"
+								class="btn-close btn-close-white me-2 m-auto"
+								data-bs-dismiss="toast">
+						</button>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	{% endif %}
 
-            {% if user.profile.role == 3 %}
-                <a href="/admin/">Admin</a> |
-            {% endif %}
-
-			<a href="/issues/">Issues</a> |
-
-			<a href="/issues/raise/">Raise Issue</a>
-
-            <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-            </form>
-        {% else %}
-            <a href="{% url 'login' %}">Login</a>
-        {% endif %}
-    </nav>
-
+	
     <hr>
 
     <!-- 🔷 PAGE CONTENT -->
     {% block content %}
     {% endblock %}
+
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const toastElements = document.querySelectorAll('.toast');
+			toastElements.forEach(toastEl => {
+				const toast = new bootstrap.Toast(toastEl);
+				toast.show();
+			});
+		});
+	</script>
+	
 
 </body>
 </html>

@@ -5,43 +5,94 @@ All Civic Issues
 {% endblock %}
 
 {% block content %}
-<h2>Civic Issues List</h2>
+<div class="container mt-4">
+    <h2 class="mb-4">Civic Issues List</h2>
 
-{% for issue in issues %}
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-        <h3>
-            {{ issue.title }}
-            {% if issue.is_emergency %}
-                <span style="color:red;">🚨 Emergency</span>
-            {% endif %}
-        </h3>
+    {% for issue in issues %}
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
 
-        <p><b>Category:</b> {{ issue.category.name }}</p>
-        <p><b>Location:</b> {{ issue.location }}</p>
-        <p><b>Status:</b> {{ issue.get_status_display }}</p>
-        <p><b>Reported by:</b> {{ issue.created_by.username }}</p>
-        <p><b>Posted on:</b> {{ issue.created_at }}</p>
+                <!-- Title + Emergency badge -->
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title mb-1">
+                        {{ issue.title }}
+                    </h5>
 
-        {% if user.profile.role > 1 %}
-			<p><b>Assigned to:</b> {{ issue.assigned_to }}</p>
+                    {% if issue.is_emergency %}
+                        <span class="badge bg-danger">
+                            🚨 Emergency
+                        </span>
+                    {% endif %}
+                </div>
 
-            <a href="{% url 'update_issue' issue.id %}">Update Status</a>
-        {% endif %}
+                <!-- Meta info -->
+                <p class="text-muted mb-2">
+                    {{ issue.category.name }} • {{ issue.location }}
+                </p>
 
-        {% if user.profile.role == 3 %}
-            | <a href="{% url 'assign_issue' issue.id %}">Assign Issue</a>
-        {% endif %}
+                <!-- Description -->
+                <p class="card-text">
+                    {{ issue.description }}
+                </p>
 
-		<p>
-			⭐ {{ issue.upvote_count }} upvotes
-		</p>
-		
-		<form method="post" action="{% url 'upvote_issue' issue.id %}">
-			{% csrf_token %}
-			<button type="submit">Upvote</button>
-		</form>
-    </div>
-{% empty %}
-    <p>No issues reported yet.</p>
-{% endfor %}
+                <!-- Status -->
+                <p>
+                    <strong>Status:</strong>
+                    {% if issue.status == "PENDING" %}
+                        <span class="badge bg-secondary">Pending</span>
+                    {% elif issue.status == "IN_PROGRESS" %}
+                        <span class="badge bg-warning text-dark">In Progress</span>
+                    {% else %}
+                        <span class="badge bg-success">Resolved</span>
+                    {% endif %}
+                </p>
+
+                <!-- Assigned staff -->
+                {% if issue.assigned_to %}
+                    <p class="mb-1">
+                        <strong>Assigned to:</strong> {{ issue.assigned_to.username }}
+                    </p>
+                {% endif %}
+
+                <!-- Upvotes -->
+                <p class="mb-2">
+                    ⭐ {{ issue.upvote_count }} upvotes
+                </p>
+
+                <!-- Action buttons -->
+                <div class="d-flex gap-2 flex-wrap">
+
+                    <!-- Upvote -->
+                    <form method="post" action="{% url 'upvote_issue' issue.id %}">
+                        {% csrf_token %}
+                        <button class="btn btn-outline-primary btn-sm">
+                            Upvote
+                        </button>
+                    </form>
+
+                    <!-- Staff/Admin: Update -->
+                    {% if user.profile.role > 1 %}
+                        <a href="{% url 'update_issue' issue.id %}"
+                           class="btn btn-outline-secondary btn-sm">
+                            Update Status
+                        </a>
+                    {% endif %}
+
+                    <!-- Admin: Assign -->
+                    {% if user.profile.role == 3 %}
+                        <a href="{% url 'assign_issue' issue.id %}"
+                           class="btn btn-outline-dark btn-sm">
+                            Assign Issue
+                        </a>
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+
+    {% empty %}
+        <p>No issues reported yet.</p>
+    {% endfor %}
+</div>
 {% endblock %}
