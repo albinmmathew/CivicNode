@@ -1,41 +1,72 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}
-Raise Issue
-{% endblock %}
+{% block title %}Report Issue - CivicNode{% endblock %}
 
 {% block content %}
-<h2>Raise a Civic Issue</h2>
+<div class="max-w-3xl mx-auto py-12">
+    <div class="glass p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-accent/5 rounded-full blur-3xl"></div>
 
-{% if messages %}
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-{% endif %}
+        <div class="relative">
+            <div class="mb-10">
+                <h1 class="text-3xl font-extrabold text-primary tracking-tight">Report a Civic Concern</h1>
+                <p class="text-slate-500 mt-2">Provide details below to help us address the issue effectively.</p>
+            </div>
 
-<form method="post">
-    {% csrf_token %}
+            <form method="POST" class="space-y-8">
+                {% csrf_token %}
 
-    <input type="text" name="title" placeholder="Issue Title" required>
-    <br><br>
+                <div class="space-y-6">
+                    <div>
+                        <label for="title"
+                            class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Issue
+                            Title</label>
+                        <input type="text" name="title" id="title" required
+                            class="w-full px-6 py-4 bg-white/50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none"
+                            placeholder="e.g. Broken streetlight on Main St">
+                    </div>
 
-    <textarea name="description" placeholder="Describe the issue" required></textarea>
-    <br><br>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="category"
+                                class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Category</label>
+                            <select name="category" id="category" required
+                                class="w-full px-6 py-4 bg-white/50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none appearance-none cursor-pointer">
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="location"
+                                class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Location
+                                / Landmark</label>
+                            <input type="text" name="location" id="location" required
+                                class="w-full px-6 py-4 bg-white/50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none"
+                                placeholder="e.g. Near Central Park Entrance">
+                        </div>
+                    </div>
 
-    <input type="text" name="location" placeholder="Location" required>
-    <br><br>
+                    <div>
+                        <label for="description"
+                            class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 px-1">Detailed
+                            Description</label>
+                        <textarea name="description" id="description" rows="4" required
+                            class="w-full px-6 py-4 bg-white/50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none"
+                            placeholder="Describe the situation in detail..."></textarea>
+                    </div>
+                </div>
 
-    <select name="category" required>
-        <option value="">-- Select Category --</option>
-        {% for cat in categories %}
-            <option value="{{ cat.id }}">
-                {{ cat.name }}
-                {% if cat.is_emergency %}(Emergency){% endif %}
-            </option>
-        {% endfor %}
-    </select>
-    <br><br>
-
-    <button type="submit">Submit Issue</button>
-</form>
+                <div class="flex items-center justify-end gap-4 pt-4">
+                    <a href="{% url 'issue_list' %}"
+                        class="px-8 py-4 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors">Cancel</a>
+                    <button type="submit"
+                        class="px-10 py-4 bg-accent text-white font-bold rounded-2xl shadow-xl shadow-blue-100 hover:bg-blue-600 hover:-translate-y-0.5 transition-all">
+                        Submit Report
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

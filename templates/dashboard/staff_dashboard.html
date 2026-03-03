@@ -1,13 +1,158 @@
 {% extends 'base.html' %}
 
-{% block title %}Staff Dashboard{% endblock %}
+{% block title %}Staff Dashboard - CivicNode{% endblock %}
 
 {% block content %}
-<h2>Staff Dashboard</h2>
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-primary">Staff Command Center</h1>
+            <p class="text-slate-500">Monitor community issues and manage resolutions.</p>
+        </div>
+        <div class="flex gap-3">
+            <div class="glass px-4 py-2 rounded-xl flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emergency animate-pulse"></span>
+                <span class="text-xs font-bold text-primary">{{ global_stats.critical }} Critical Issues</span>
+            </div>
+            <div class="glass px-4 py-2 rounded-xl flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-warning"></span>
+                <span class="text-xs font-bold text-primary">{{ global_stats.unassigned }} Unassigned</span>
+            </div>
+        </div>
+    </div>
 
-<p>Welcome, {{ user.username }}</p>
+    <!-- Assigned Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="glass-dark p-6 rounded-3xl shadow-xl border-t-4 border-accent text-white">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Assigned to You</span>
+            <div class="text-4xl font-bold mt-1">{{ stats.total }}</div>
+            <p class="text-xs text-slate-400 mt-2">Active workload</p>
+        </div>
+        <div class="glass p-6 rounded-3xl shadow-sm border-t-4 border-warning">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending Action</span>
+            <div class="text-4xl font-bold mt-1 text-warning">{{ stats.pending }}</div>
+            <p class="text-xs text-slate-500 mt-2">Requires attention</p>
+        </div>
+        <div class="glass p-6 rounded-3xl shadow-sm border-t-4 border-success">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Your Resolved</span>
+            <div class="text-4xl font-bold mt-1 text-success">{{ stats.resolved }}</div>
+            <p class="text-xs text-slate-500 mt-2">Total contributions</p>
+        </div>
+    </div>
 
-<ul>
-    <li><a href="/issues/">View Assigned Issues</a></li>
-</ul>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Queue Visualization -->
+        <div class="lg:col-span-1">
+            <div class="glass p-8 rounded-3xl shadow-sm h-full">
+                <h3 class="text-lg font-bold text-primary mb-6">Queue Analysis</h3>
+                <canvas id="staffChart" class="max-h-64"></canvas>
+
+                <div class="mt-8 space-y-4">
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                        <span class="text-sm font-medium text-slate-600">Avg. Resolution Time</span>
+                        <span class="text-sm font-bold text-primary">2.4 Days</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
+                        <span class="text-sm font-medium text-slate-600">Success Rate</span>
+                        <span class="text-sm font-bold text-success">92%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issue Table -->
+        <div class="lg:col-span-2">
+            <div class="glass p-8 rounded-3xl shadow-sm overflow-hidden h-full">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold text-primary">Assigned Issue Queue</h3>
+                    <a href="{% url 'issue_list' %}"
+                        class="px-4 py-2 bg-slate-900 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors">Manage
+                        All</a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr
+                                class="text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                                <th class="pb-4">Issue</th>
+                                <th class="pb-4">Priority</th>
+                                <th class="pb-4">Status</th>
+                                <th class="pb-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            {% for issue in relevant_issues %}
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="py-4 pr-4">
+                                    <div class="font-semibold text-primary text-sm">{{ issue.title }}</div>
+                                    <div class="text-xs text-slate-400 truncate max-w-[200px]">{{ issue.location }}
+                                    </div>
+                                </td>
+                                <td class="py-4">
+                                    {% if issue.category.is_emergency %}
+                                    <span
+                                        class="px-2 py-0.5 bg-red-100 text-red-600 rounded text-[10px] font-bold uppercase">Emergency</span>
+                                    {% else %}
+                                    <span
+                                        class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px] font-bold uppercase">Regular</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4 text-xs font-medium">
+                                    {{ issue.get_status_display }}
+                                </td>
+                                <td class="py-4 text-right">
+                                    <a href="{% url 'update_issue' issue.id %}"
+                                        class="text-accent hover:text-blue-700 text-xs font-bold">Update</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="py-12 text-center text-slate-400 italic">No issues currently in
+                                    your queue.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('staffChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Pending', 'In Progress', 'Resolved'],
+                datasets: [{
+                    label: 'Issue Status',
+                    data: [{{ stats.pending }}, {{ stats.in_progress }}, {{ stats.resolved }}],
+        backgroundColor: ['#f59e0b', '#3b82f6', '#22c55e'],
+        borderRadius: 8,
+        maxBarThickness: 40
+                }]
+            },
+        options: {
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grid: { display: false },
+                ticks: { precision: 0 }
+            },
+            x: {
+                grid: { display: false }
+            }
+        },
+        responsive: true
+    }
+        });
+    });
+</script>
 {% endblock %}

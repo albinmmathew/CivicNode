@@ -1,14 +1,146 @@
 {% extends 'base.html' %}
 
-{% block title %}Citizen Dashboard{% endblock %}
+{% block title %}Citizen Dashboard - CivicNode{% endblock %}
 
 {% block content %}
-<h2>Citizen Dashboard</h2>
+<div class="space-y-8">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-primary">Your Overview</h1>
+            <p class="text-slate-500">Track and manage the issues you've reported.</p>
+        </div>
+        <a href="{% url 'raise_issue' %}"
+            class="inline-flex items-center justify-center px-6 py-3 bg-accent text-white font-semibold rounded-xl shadow-lg shadow-blue-200 hover:bg-blue-600 transition-all gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Report New Issue
+        </a>
+    </div>
 
-<p>Welcome, {{ user.username }}</p>
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="glass p-6 rounded-3xl shadow-sm border-t-4 border-accent">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Reported</span>
+            <div class="text-4xl font-bold mt-1 text-primary">{{ stats.total }}</div>
+        </div>
+        <div class="glass p-6 rounded-3xl shadow-sm border-t-4 border-warning">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Pending</span>
+            <div class="text-4xl font-bold mt-1 text-warning">{{ stats.pending }}</div>
+        </div>
+        <div class="glass p-6 rounded-3xl shadow-sm border-t-4 border-blue-400">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">In Progress</span>
+            <div class="text-4xl font-bold mt-1 text-blue-500">{{ stats.in_progress }}</div>
+        </div>
+        <div class="glass p-6 rounded-3xl shadow-sm border-t-4 border-success">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Resolved</span>
+            <div class="text-4xl font-bold mt-1 text-success">{{ stats.resolved }}</div>
+        </div>
+    </div>
 
-<ul>
-    <li><a href="/issues/raise/">Raise an Issue</a></li>
-    <li><a href="/issues/">View All Issues</a></li>
-</ul>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Visual Insights -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="glass p-8 rounded-3xl shadow-sm h-full">
+                <h3 class="text-lg font-bold text-primary mb-6">Status Breakdown</h3>
+                <div class="relative aspect-square">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="lg:col-span-2">
+            <div class="glass p-8 rounded-3xl shadow-sm overflow-hidden h-full">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-lg font-bold text-primary">Recent Issues</h3>
+                    <a href="{% url 'issue_list' %}" class="text-sm font-semibold text-accent hover:underline">View
+                        All</a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr
+                                class="text-slate-400 text-xs font-bold uppercase tracking-wider border-b border-slate-100">
+                                <th class="pb-4">Title</th>
+                                <th class="pb-4">Category</th>
+                                <th class="pb-4">Status</th>
+                                <th class="pb-4 text-right">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            {% for issue in recent_issues %}
+                            <tr class="hover:bg-slate-50/50 transition-colors group">
+                                <td class="py-4 font-semibold text-primary pr-4">{{ issue.title }}</td>
+                                <td class="py-4">
+                                    <span
+                                        class="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-medium">
+                                        {{ issue.category.name }}
+                                    </span>
+                                </td>
+                                <td class="py-4">
+                                    {% if issue.status == 'PENDING' %}
+                                    <span class="inline-flex items-center gap-1.5 text-warning font-semibold text-xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-warning"></span> Pending
+                                    </span>
+                                    {% elif issue.status == 'IN_PROGRESS' %}
+                                    <span class="inline-flex items-center gap-1.5 text-blue-500 font-semibold text-xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span> In Progress
+                                    </span>
+                                    {% else %}
+                                    <span class="inline-flex items-center gap-1.5 text-success font-semibold text-xs">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-success"></span> Resolved
+                                    </span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4 text-right text-slate-400 text-xs">{{ issue.created_at|date:"M d" }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="py-12 text-center text-slate-400 italic">No issues reported yet.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Pending', 'In Progress', 'Resolved'],
+                datasets: [{
+                    data: [{{ stats.pending }}, {{ stats.in_progress }}, {{ stats.resolved }}],
+        backgroundColor: ['#f59e0b', '#3b82f6', '#22c55e'],
+        borderWidth: 0,
+        hoverOffset: 4
+                }]
+            },
+        options: {
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true,
+                    padding: 20
+                }
+            }
+        },
+        cutout: '70%',
+        responsive: true,
+        maintainAspectRatio: true
+    }
+        });
+    });
+</script>
 {% endblock %}

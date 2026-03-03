@@ -1,165 +1,181 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}CivicNode{% endblock %}</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+	<title>{% block title %}CivicNode{% endblock %}</title>
+
+	<!-- Fonts -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+	<!-- Tailwind CSS -->
+	<script src="https://cdn.tailwindcss.com"></script>
+
+	<!-- Chart.js -->
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+	<script>
+		tailwind.config = {
+			theme: {
+				extend: {
+					colors: {
+						primary: '#0f172a',
+						accent: '#3b82f6',
+						emergency: '#ef4444',
+						success: '#22c55e',
+						warning: '#f59e0b',
+					},
+					fontFamily: {
+						sans: ['Inter', 'sans-serif'],
+					},
+				}
+			}
+		}
+	</script>
+
 	<style>
-		/* Navbar link hover */
-		.navbar .nav-link {
-			position: relative;
-			transition: color 0.2s ease;
+		.glass {
+			background: rgba(255, 255, 255, 0.7);
+			backdrop-filter: blur(10px);
+			-webkit-backdrop-filter: blur(10px);
+			border: 1px solid rgba(255, 255, 255, 0.3);
 		}
-	
-		.navbar .nav-link:hover {
-			color: #0d6efd; /* Bootstrap primary blue */
+
+		.glass-dark {
+			background: rgba(15, 23, 42, 0.8);
+			backdrop-filter: blur(12px);
+			-webkit-backdrop-filter: blur(12px);
+			border: 1px solid rgba(255, 255, 255, 0.1);
 		}
-	
-		/* Button hover smoothness */
-		.navbar .btn {
-			transition: all 0.2s ease-in-out;
-		}
-	
-		.navbar .btn:hover {
-			transform: translateY(-1px);
-		}
-	
-		/* Optional underline animation */
-		.navbar .nav-link::after {
-			content: "";
-			position: absolute;
-			width: 0;
-			height: 2px;
-			left: 0;
-			bottom: 0;
-			background-color: #0d6efd;
-			transition: width 0.2s ease;
-		}
-	
-		.navbar .nav-link:hover::after {
-			width: 100%;
+
+		body {
+			background-color: #f8fafc;
+			background-image: radial-gradient(at 0% 0%, hsla(210, 100%, 98%, 1) 0, transparent 50%),
+				radial-gradient(at 50% 0%, hsla(220, 100%, 97%, 1) 0, transparent 50%),
+				radial-gradient(at 100% 0%, hsla(230, 100%, 98%, 1) 0, transparent 50%);
+			min-height: 100vh;
 		}
 	</style>
-	
+	{% block extra_head %}{% endblock %}
 </head>
-<body>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-		<div class="container">
-	
-			<!-- Brand -->
-			<a class="navbar-brand fw-bold" href="{% url 'issue_list' %}">
+<body class="font-sans text-slate-900">
+
+	<!-- Navigation -->
+	<nav class="sticky top-0 z-50 glass shadow-sm px-6 py-4 mb-8">
+		<div class="max-w-7xl mx-auto flex items-center justify-between">
+			<a href="{% url 'issue_list' %}"
+				class="text-2xl font-bold tracking-tight text-primary flex items-center gap-2">
+				<div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center text-white text-sm">CN</div>
 				CivicNode
 			</a>
-	
-			<!-- Mobile toggle -->
-			<button class="navbar-toggler" type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarContent">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-	
-			<!-- Navbar content -->
-			<div class="collapse navbar-collapse" id="navbarContent">
-				<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-	
-					{% if user.is_authenticated %}
-	
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'issue_list' %}">Issues</a>
-						</li>
-	
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'raise_issue' %}">Raise Issue</a>
-						</li>
-	
-						{% if user.profile.role > 1 %}
-							<li class="nav-item">
-								<a class="nav-link" href="{% url 'staff' %}">Staff Dashboard</a>
-							</li>
-						{% endif %}
-	
-						{% if user.profile.role == 3 %}
-							<li class="nav-item">
-								<a class="nav-link" href="% url 'admin' %">Admin</a>
-							</li>
-						{% endif %}
-	
-					{% endif %}
-				</ul>
-	
-				<!-- Right side -->
-				<ul class="navbar-nav ms-auto">
-	
-					{% if user.is_authenticated %}
-					<li class="nav-item d-flex align-items-center">
-						<span class="nav-link text-muted me-2">Hi, {{ user.username }}</span>
-					</li>
-					
-					<li class="nav-item d-flex align-items-center">
-						<form method="post" action="{% url 'logout' %}">
-							{% csrf_token %}
-							<button class="btn btn-outline-danger btn-sm">Logout</button>
-						</form>
-					</li>					
-					
-					{% else %}
-					<li class="nav-item">
-						<div class="d-flex align-items-center gap-2">
-							<a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm">Login</a>
-							<a href="{% url 'register' %}" class="btn btn-primary btn-sm">Start for Free</a>
-						</div>
-					</li>					
-					{% endif %}
 
-				</ul>
+			<div class="hidden md:flex items-center gap-8">
+				{% if user.is_authenticated %}
+				<a href="{% url 'issue_list' %}"
+					class="text-sm font-medium hover:text-accent transition-colors">Issues</a>
+				<a href="{% url 'raise_issue' %}" class="text-sm font-medium hover:text-accent transition-colors">Report
+					Issue</a>
+
+				{% if user.profile.role > 1 %}
+				<a href="{% url 'staff' %}" class="text-sm font-medium hover:text-accent transition-colors">Staff
+					Dashboard</a>
+				{% endif %}
+
+				{% if user.profile.role == 3 %}
+				<a href="/admin" class="text-sm font-medium hover:text-accent transition-colors">Admin</a>
+				{% endif %}
+				{% endif %}
+			</div>
+
+			<div class="flex items-center gap-4">
+				{% if user.is_authenticated %}
+				<div class="flex items-center gap-3">
+					<span class="text-xs font-semibold text-slate-500 hidden lg:inline">Welcome, {{ user.username
+						}}</span>
+					<form method="post" action="{% url 'logout' %}" class="m-0">
+						{% csrf_token %}
+						<button
+							class="px-4 py-2 text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full transition-all">
+							Logout
+						</button>
+					</form>
+				</div>
+				{% else %}
+				<a href="{% url 'login' %}"
+					class="text-sm font-medium text-slate-600 hover:text-primary transition-colors">Login</a>
+				<a href="{% url 'register' %}"
+					class="px-5 py-2.5 text-sm font-semibold bg-accent hover:bg-blue-600 text-white rounded-full shadow-lg shadow-blue-200 transition-all transform hover:-translate-y-0.5">
+					Get Started
+				</a>
+				{% endif %}
 			</div>
 		</div>
 	</nav>
-	
-	{% if messages %}
-		<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-			{% for message in messages %}
-				<div class="toast align-items-center text-bg-{{ message.tags }} border-0 mb-2"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-					data-bs-delay="3000">
 
-					<div class="d-flex">
-						<div class="toast-body">
-							{{ message }}
-						</div>
-						<button type="button"
-								class="btn-close btn-close-white me-2 m-auto"
-								data-bs-dismiss="toast">
-						</button>
-					</div>
-				</div>
-			{% endfor %}
+	<!-- Messages / Toasts -->
+	{% if messages %}
+	<div class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3">
+		{% for message in messages %}
+		<div
+			class="message-toast glass px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-slide-in pointer-events-auto border-l-4 
+             {% if message.tags == 'success' %}border-success{% elif message.tags == 'error' %}border-emergency{% else %}border-accent{% endif %}">
+			<span class="text-sm font-medium">{{ message }}</span>
+			<button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600">
+				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+					</path>
+				</svg>
+			</button>
 		</div>
+		{% endfor %}
+	</div>
 	{% endif %}
 
-	
-    <hr>
+	<main class="max-w-7xl mx-auto px-6 pb-12">
+		{% block content %}
+		{% endblock %}
+	</main>
 
-    <!-- 🔷 PAGE CONTENT -->
-    {% block content %}
-    {% endblock %}
+	<footer class="mt-auto border-t border-slate-200 py-12 px-6 bg-white">
+		<div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+			<span class="text-slate-500 text-sm">© 2026 CivicNode. Empowering Communities.</span>
+			<div class="flex gap-6">
+				<a href="#" class="text-slate-400 hover:text-slate-600 transition-colors">Terms</a>
+				<a href="#" class="text-slate-400 hover:text-slate-600 transition-colors">Privacy</a>
+				<a href="#" class="text-slate-400 hover:text-slate-600 transition-colors">Contact</a>
+			</div>
+		</div>
+	</footer>
 
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 	<script>
-		document.addEventListener("DOMContentLoaded", function () {
-			const toastElements = document.querySelectorAll('.toast');
-			toastElements.forEach(toastEl => {
-				const toast = new bootstrap.Toast(toastEl);
-				toast.show();
+		// Auto-hide messages
+		setTimeout(() => {
+			document.querySelectorAll('.message-toast').forEach(toast => {
+				toast.classList.add('opacity-0', 'translate-x-full', 'transition-all', 'duration-500');
+				setTimeout(() => toast.remove(), 500);
 			});
-		});
-	</script>
-	
+		}, 5000);
 
+		// Simple AJAX CSRF helper
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+	</script>
 </body>
+
 </html>

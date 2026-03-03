@@ -93,17 +93,33 @@ def assign_issue(request, issue_id):
         }
     )
 
+from django.http import JsonResponse
+
 @login_required
 def upvote_issue(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
+    
+    # Check if it's an AJAX request (by checking header)
+    is_ajax = request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
     try:
         Upvote.objects.create(
             user=request.user,
             issue=issue
         )
+        if is_ajax:
+            return JsonResponse({
+                'status': 'success',
+                'count': issue.upvote_count(),
+                'message': 'You upvoted this issue'
+            })
         messages.success(request, "You upvoted this issue")
     except IntegrityError:
+        if is_ajax:
+            return JsonResponse({
+                'status': 'warning',
+                'message': 'You have already upvoted this issue'
+            }, status=400)
         messages.warning(request, "You have already upvoted this issue")
 
     return redirect('issue_list')
