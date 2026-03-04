@@ -1,46 +1,120 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CivicNode{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-    <!-- COMMON -->
-    <nav style="padding:10px; background:#eee;">
-		<!-- Style to create a normal text like hyper link -->
-        <b><a href = "/" style="text-decoration:none; color:black;">CivicNode</a></b> |
+    <nav>
+        <b><a href="/">CivicNode</a></b>
 
-        {% if user.is_authenticated %}
-            {% if user.profile.role > 1 %}
-                <a href="/staff/">Staff Dashboard</a> |
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+            {% if user.profile.role >= 2 %}
+            <a href="{% url 'assigned_issues' %}">Home</a>
             {% else %}
-                <a href="/">Dashboard</a> |
+            <a href="{% url 'dashboard' %}">Home</a>
             {% endif %}
 
             {% if user.profile.role == 3 %}
-                <a href="/admin/">Admin</a> |
+            <a href="/admin/">Admin</a>
             {% endif %}
 
-			<a href="/issues/">Issues</a> |
+            <div class="dropdown">
+                <a href="#" class="dropdown-trigger">Issues ▾</a>
+                <div class="dropdown-content">
+                    <a href="/issues/">All Issues</a>
+                    <a href="/issues/raise/">Raise Issue</a>
+                    {% if user.profile.role >= 2 %}
+                    <a href="{% url 'assigned_issues' %}">Assigned Issues</a>
+                    {% endif %}
+                </div>
+            </div>
 
-			<a href="/issues/raise/">Raise Issue</a>
+            <a href="{% url 'profile' %}">Profile</a>
 
-            <form method="post" action="{% url 'logout' %}">
+            <form method="post" action="{% url 'logout' %}" style="margin: 0;">
                 {% csrf_token %}
-                <button type="submit">Logout</button>
+                <button type="submit" style="color: var(--danger); font-weight: 600;">Logout</button>
             </form>
-        {% else %}
+            {% else %}
             <a href="{% url 'login' %}">Login</a>
-        {% endif %}
+            <a href="{% url 'register' %}" class="btn btn-primary" style="margin-left: 1rem;">Start for Free</a>
+            {% endif %}
+
+            <button class="theme-toggle" id="theme-btn" title="Toggle Dark/Light Mode">
+                <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" style="width: 20px; height: 20px;">
+                    <!-- SVG content will be injected by JS -->
+                </svg>
+            </button>
+        </div>
     </nav>
 
-    <hr>
+    <main class="container animate-fade-in">
+        <!-- GLOBAL MESSAGES -->
+        {% if messages %}
+        <div class="toast-container">
+            {% for message in messages %}
+            <div class="toast toast-{{ message.tags }}">
+                <div class="toast-icon">
+                    {% if message.tags == 'success' %}
+                    {% elif message.tags == 'error' or message.tags == 'danger' %}
+                    {% elif message.tags == 'warning' %}
+                    {% else %}{% endif %}
+                </div>
+                <div class="toast-content">{{ message }}</div>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
-    <!-- 🔷 PAGE CONTENT -->
-    {% block content %}
-    {% endblock %}
+        <!-- PAGE CONTENT -->
+        {% block content %}
+        {% endblock %}
+    </main>
 
+    <script>
+        const themeBtn = document.getElementById('theme-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const html = document.documentElement;
+
+        const sunIcon = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="4.22" x2="19.78" y2="5.64"></line>`;
+        const moonIcon = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+
+        // Check for saved theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        themeIcon.innerHTML = savedTheme === 'light' ? moonIcon : sunIcon;
+
+        themeBtn.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeIcon.innerHTML = newTheme === 'light' ? moonIcon : sunIcon;
+        });
+
+        // Auto-hide toasts after 5 seconds
+        setTimeout(() => {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            });
+        }, 5000);
+    </script>
 </body>
+
 </html>

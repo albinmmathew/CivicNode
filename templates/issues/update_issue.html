@@ -1,39 +1,38 @@
 {% extends "base.html" %}
 
-{% block title %}
-Update Issue
-{% endblock %}
+{% block title %}Update Issue - CivicNode{% endblock %}
 
 {% block content %}
-<h2>Update Issue Status</h2>
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2 class="mb-1">Update Issue Status</h2>
 
-<div style="border:1px solid #ccc; padding:10px; margin-bottom:15px;">
-    <h3>{{ issue.title }}</h3>
-    <p>{{ issue.description }}</p>
+    <div class="card" style="background: var(--background); box-shadow: none; border-style: dashed;">
+        <h3>{{ issue.title }}</h3>
+        <p class="text-muted mt-1">{{ issue.description }}</p>
+    </div>
+
+    <form method="post" class="mt-1">
+        {% csrf_token %}
+
+        <label for="status">Current Status</label>
+        <select name="status" id="status" required>
+            <option value="PENDING" {% if is_pending %}selected{% endif %}>
+                Pending
+            </option>
+            <option value="IN_PROGRESS" {% if is_in_progress %}selected{% endif %}>
+                In Progress
+            </option>
+            <option value="RESOLVED" {% if is_resolved %}selected{% endif %}>
+                Resolved
+            </option>
+        </select>
+
+        <label for="remarks">Staff Remarks</label>
+        <textarea name="remarks" id="remarks" placeholder="Enter any updates or notes"
+            style="min-height: 100px;">{{ issue.remarks }}</textarea>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Update Issue
+            Status</button>
+    </form>
 </div>
-
-<form method="post">
-    {% csrf_token %}
-
-    <label for="status">Status:</label><br>
-    <select name="status" id="status">
-        <option value="PENDING" {% if issue.status == 'PENDING' %}selected{% endif %}>
-            Pending
-        </option>
-        <option value="IN_PROGRESS" {% if issue.status == 'IN_PROGRESS' %}selected{% endif %}>
-            In Progress
-        </option>
-        <option value="RESOLVED" {% if issue.status == 'RESOLVED' %}selected{% endif %}>
-            Resolved
-        </option>
-    </select>
-
-    <br><br>
-
-    <label for="remarks">Remarks:</label><br>
-    <textarea name="remarks" id="remarks">{{ issue.remarks }}</textarea>
-
-    <br><br>
-    <button type="submit">Update Issue</button>
-</form>
 {% endblock %}

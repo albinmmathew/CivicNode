@@ -1,47 +1,97 @@
 {% extends "base.html" %}
 
 {% block title %}
-All Civic Issues
+{{ page_title|default:"Civic Issues" }} - CivicNode
 {% endblock %}
 
 {% block content %}
-<h2>Civic Issues List</h2>
+<h2 class="mb-1">{{ page_title|default:"Civic Issues List" }}</h2>
 
-{% for issue in issues %}
-    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
-        <h3>
-            {{ issue.title }}
-            {% if issue.is_emergency %}
-                <span style="color:red;">🚨 Emergency</span>
+<!-- ACTIVE ISSUES SECTION -->
+<div class="mt-1">
+    <h3 class="mb-1" style="color: var(--primary);">Active Reports</h3>
+    <div class="issues-grid">
+        {% for issue in active_issues %}
+        <div class="card">
+            <h3>
+                {{ issue.title }}
+                {% if issue.category.is_emergency %}
+                <span class="badge badge-emergency">Emergency</span>
+                {% endif %}
+            </h3>
+
+            <div class="text-muted">
+                <p><b>Category:</b> {{ issue.category.name }}</p>
+                <p><b>Location:</b> {{ issue.location }}</p>
+                <p><b>Status:</b> <span class="badge badge-status">{{ issue.get_status_display }}</span></p>
+                <p><b>Reported by:</b> {{ issue.created_by.username }}</p>
+                <p><b>Posted on:</b> {{ issue.created_at|date:"M d, Y" }}</p>
+            </div>
+
+            {% if user.profile.role > 1 %}
+            <div class="mt-1">
+                <p><b>Assigned to:</b> {{ issue.assigned_to|default:"Unassigned" }}</p>
+                <a href="{% url 'update_issue' issue.id %}" class="btn btn-outline mt-1">Update Status</a>
+            </div>
             {% endif %}
-        </h3>
 
-        <p><b>Category:</b> {{ issue.category.name }}</p>
-        <p><b>Location:</b> {{ issue.location }}</p>
-        <p><b>Status:</b> {{ issue.get_status_display }}</p>
-        <p><b>Reported by:</b> {{ issue.created_by.username }}</p>
-        <p><b>Posted on:</b> {{ issue.created_at }}</p>
+            {% if user.profile.role == 3 %}
+            <a href="{% url 'assign_issue' issue.id %}" class="btn btn-outline mt-1">Assign Issue</a>
+            {% endif %}
 
-        {% if user.profile.role > 1 %}
-			<p><b>Assigned to:</b> {{ issue.assigned_to }}</p>
+            <div class="card-footer" style="flex-direction: column; align-items: stretch;">
+                <hr style="width: 100%; margin-bottom: 1rem; border: 0; border-top: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <p style="margin: 0;">⭐ <b>{{ issue.upvote_count }}</b> upvotes</p>
 
-            <a href="{% url 'update_issue' issue.id %}">Update Status</a>
-        {% endif %}
-
-        {% if user.profile.role == 3 %}
-            | <a href="{% url 'assign_issue' issue.id %}">Assign Issue</a>
-        {% endif %}
-
-		<p>
-			⭐ {{ issue.upvote_count }} upvotes
-		</p>
-		
-		<form method="post" action="{% url 'upvote_issue' issue.id %}">
-			{% csrf_token %}
-			<button type="submit">Upvote</button>
-		</form>
+                    <form method="post" action="{% url 'upvote_issue' issue.id %}" style="margin: 0;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary btn-sm">Upvote</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No active issues reported.</p>
+        {% endfor %}
     </div>
-{% empty %}
-    <p>No issues reported yet.</p>
-{% endfor %}
+</div>
+
+<!-- RESOLVED ISSUES SECTION -->
+<div style="margin-top: 4rem;">
+    <h3 class="mb-1" style="color: var(--success);">Community Wins (Resolved)</h3>
+    <div class="issues-grid" style="opacity: 0.85;">
+        {% for issue in resolved_issues %}
+        <div class="card resolved-card" style="border-left: 5px solid var(--success); background: var(--card-bg);">
+            <h3>
+                {{ issue.title }}
+                <span class="badge" style="background: var(--success); color: white;">Resolved</span>
+            </h3>
+
+            <div class="text-muted">
+                <p><b>Category:</b> {{ issue.category.name }}</p>
+                <p><b>Location:</b> {{ issue.location }}</p>
+                <p><b>Status:</b> <span class="badge badge-success">Resolved</span></p>
+                <p><b>Reported by:</b> {{ issue.created_by.username }}</p>
+                <p><b>Resolved on:</b> {{ issue.updated_at|date:"M d, Y" }}</p>
+            </div>
+
+            {% if issue.remarks %}
+            <div class="remarks-box">
+                <b>Staff Remarks:</b> {{ issue.remarks }}
+            </div>
+            {% endif %}
+
+            <div class="card-footer" style="flex-direction: column; align-items: stretch;">
+                <hr style="width: 100%; margin-bottom: 1rem; border: 0; border-top: 1px solid var(--border);">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <p style="margin: 0;">⭐ <b>{{ issue.upvote_count }}</b> upvotes</p>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No resolved issues yet. Let's get working!</p>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

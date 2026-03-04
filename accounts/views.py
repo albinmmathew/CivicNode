@@ -4,6 +4,7 @@ from django.shortcuts import render ,redirect
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login  as auth_login
+from django.contrib.auth.decorators import login_required
 
 # For registering user
 def register(request):
@@ -62,13 +63,17 @@ def user_login(request):
 
             role = user.profile.role
 
-            if role > 2:
-                return redirect('/staff/')
+            if role >= 2:
+                return redirect('assigned_issues')
             else:
-                return redirect('/')
+                return redirect('dashboard')
 
         else:
             messages.error(request, "Invalid username or password")
             return redirect('login')
 
     return render(request, 'accounts/login.html')
+
+@login_required
+def profile(request):
+    return render(request, 'accounts/profile.html')

@@ -1,30 +1,41 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Register - CivicNode{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 500px; margin: 2rem auto;">
     <h2>Citizen Registration</h2>
 
     {% if messages %}
+    <div class="mt-1">
         {% for message in messages %}
-            <p>{{ message }}</p>
+        <p class="badge badge-emergency" style="display: block; margin-bottom: 0.5rem; text-align: center;">{{ message
+            }}</p>
         {% endfor %}
+    </div>
     {% endif %}
 
-    <form method="post">
+    <form method="post" class="mt-1">
         {% csrf_token %}
 
-        <input type="text" name="username" placeholder="Username" required><br><br>
-        <input type="email" name="email" placeholder="Email" required><br><br>
-        <input type="password" name="password1" placeholder="Password" required><br><br>
-        <input type="password" name="password2" placeholder="Confirm Password" required><br><br>
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" placeholder="Choose a username" required>
 
-        <button type="submit">Register</button>
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" placeholder="Enter your email" required>
+
+        <label for="password1">Password</label>
+        <input type="password" name="password1" id="password1" placeholder="Create a password" required>
+
+        <label for="password2">Confirm Password</label>
+        <input type="password" name="password2" id="password2" placeholder="Repeat your password" required>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
     </form>
-	<p>Already Registered? <a href="/accounts/login"> Login Here!!</a></p>
-</body>
-</html>
 
+    <hr>
+    <p class="text-muted" style="text-align: center;">
+        Already Registered? <a href="/accounts/login">Login Here!!</a>
+    </p>
+</div>
+{% endblock %}

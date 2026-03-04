@@ -1,31 +1,30 @@
 {% extends "base.html" %}
 
-{% block title %}
-Assign Issue
-{% endblock %}
+{% block title %}Assign Issue - CivicNode{% endblock %}
 
 {% block content %}
-<h2>Assign Issue</h2>
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2 class="mb-1">Assign Issue</h2>
 
-<div style="border:1px solid #ccc; padding:10px; margin-bottom:15px;">
-    <h3>{{ issue.title }}</h3>
-    <p>{{ issue.description }}</p>
-</div>
+    <div class="card" style="background: var(--background); box-shadow: none; border-style: dashed;">
+        <h3>{{ issue.title }}</h3>
+        <p class="text-muted mt-1">{{ issue.description }}</p>
+    </div>
 
-<form method="post">
-    {% csrf_token %}
+    <form method="post" class="mt-1">
+        {% csrf_token %}
 
-    <label for="staff">Select Staff:</label><br>
-    <select name="staff" id="staff" required>
-        <option value="">-- Choose Staff --</option>
-        {% for staff in staff_users %}
+        <label for="staff">Select Staff Member</label>
+        <select name="staff" id="staff" required>
+            <option value="">-- Choose Staff --</option>
+            {% for staff in staff_users %}
             <option value="{{ staff.id }}">
                 {{ staff.username }}
             </option>
-        {% endfor %}
-    </select>
+            {% endfor %}
+        </select>
 
-    <br><br>
-    <button type="submit">Assign</button>
-</form>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Assign to Staff</button>
+    </form>
+</div>
 {% endblock %}

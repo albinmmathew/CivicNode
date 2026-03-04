@@ -1,41 +1,45 @@
 {% extends "base.html" %}
 
-{% block title %}
-Raise Issue
-{% endblock %}
+{% block title %}Raise Issue - CivicNode{% endblock %}
 
 {% block content %}
-<h2>Raise a Civic Issue</h2>
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2 class="mb-1">Raise a Civic Issue</h2>
 
-{% if messages %}
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-{% endif %}
+    {% if messages %}
+    <div class="mt-1">
+        {% for message in messages %}
+        <p class="badge badge-emergency" style="display: block; margin-bottom: 0.5rem; text-align: center;">{{ message
+            }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-<form method="post">
-    {% csrf_token %}
+    <form method="post" class="mt-1">
+        {% csrf_token %}
 
-    <input type="text" name="title" placeholder="Issue Title" required>
-    <br><br>
+        <label for="title">Issue Title</label>
+        <input type="text" name="title" id="title" placeholder="e.g., Pothole on Main St" required>
 
-    <textarea name="description" placeholder="Describe the issue" required></textarea>
-    <br><br>
+        <label for="description">Description</label>
+        <textarea name="description" id="description" placeholder="Provide details about the issue" required
+            style="min-height: 120px;"></textarea>
 
-    <input type="text" name="location" placeholder="Location" required>
-    <br><br>
+        <label for="location">Location</label>
+        <input type="text" name="location" id="location" placeholder="e.g., Near City Park" required>
 
-    <select name="category" required>
-        <option value="">-- Select Category --</option>
-        {% for cat in categories %}
+        <label for="category">Category</label>
+        <select name="category" id="category" required>
+            <option value="">-- Select Category --</option>
+            {% for cat in categories %}
             <option value="{{ cat.id }}">
                 {{ cat.name }}
                 {% if cat.is_emergency %}(Emergency){% endif %}
             </option>
-        {% endfor %}
-    </select>
-    <br><br>
+            {% endfor %}
+        </select>
 
-    <button type="submit">Submit Issue</button>
-</form>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Submit Issue</button>
+    </form>
+</div>
 {% endblock %}

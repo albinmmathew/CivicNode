@@ -1,15 +1,17 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
-@login_required
-def citizen_dashboard(request):
-    role = request.user.profile.role
-    return render(request, 'dashboard/citizen_dashboard.html', {'role': role})
+def landing(request):
+    if request.user.is_authenticated:
+        if request.user.profile.role >= 2:
+            return redirect('assigned_issues')
+        return redirect('dashboard')
+    return render(request, 'dashboard/landing.html')
 
 @login_required
-def staff_dashboard(request):
+def dashboard(request):
     role = request.user.profile.role
-    return render(request, 'dashboard/staff_dashboard.html', {'role': role})
+    return render(request, 'dashboard/dashboard.html', {'role': role})

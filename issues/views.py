@@ -37,10 +37,17 @@ def raise_issue(request):
 
 @login_required
 def issue_list(request):
-    issues = Issue.objects.select_related('category', 'created_by') \
+    all_issues = Issue.objects.select_related('category', 'created_by') \
         .order_by('-category__is_emergency', '-created_at')
+    
+    active_issues = all_issues.exclude(status='RESOLVED')
+    resolved_issues = all_issues.filter(status='RESOLVED')
 
-    return render(request, 'issues/issue_list.html', {'issues': issues})
+    return render(request, 'issues/issue_list.html', {
+        'active_issues': active_issues,
+        'resolved_issues': resolved_issues,
+        'page_title': 'Community Issues'
+    })
 
 @login_required
 def update_issue_status(request, issue_id):
@@ -62,13 +69,19 @@ def update_issue_status(request, issue_id):
         messages.success(request, "Issue updated successfully")
         return redirect('issue_list')
 
-    return render(request, 'issues/update_issue.html', {'issue': issue})
+    context = {
+        'issue': issue,
+        'is_pending': issue.status == 'PENDING',
+        'is_in_progress': issue.status == 'IN_PROGRESS',
+        'is_resolved': issue.status == 'RESOLVED',
+    }
+    return render(request, 'issues/update_issue.html', context)
 
 @login_required
 def assign_issue(request, issue_id):
     issue = get_object_or_404(Issue, id=issue_id)
 
-    # 🔐 Admin-only check
+    # Admin-only check
     if not (request.user.is_superuser or request.user.profile.role == 3):
         return HttpResponseForbidden("Only admin can assign issues")
 
@@ -106,4 +119,22 @@ def upvote_issue(request, issue_id):
     except IntegrityError:
         messages.warning(request, "You have already upvoted this issue")
 
-    return redirect('issue_list')
+    return redirect(request.META.get('HTTP_REFERER', 'issue_list'))
+
+@login_required
+def assigned_issues(request):
+    # Only staff and admins should see assigned issues
+    if request.user.profile.role < 2:
+        return HttpResponseForbidden("You don't have permission to view assigned issues.")
+    
+    all_issues = Issue.objects.filter(assigned_to=request.user).select_related('category', 'created_by') \
+        .order_by('-category__is_emergency', '-created_at')
+        
+    active_issues = all_issues.exclude(status='RESOLVED')
+    resolved_issues = all_issues.filter(status='RESOLVED')
+
+    return render(request, 'issues/issue_list.html', {
+        'active_issues': active_issues,
+        'resolved_issues': resolved_issues,
+        'page_title': 'My Assigned Issues'
+    })

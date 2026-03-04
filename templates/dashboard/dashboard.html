@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - CivicNode{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Dashboard</h2>
+    <p class="text-muted mt-1">Welcome, <b>{{ user.username }}</b></p>
+
+    <hr>
+
+    <div style="display: flex; gap: 1rem;">
+        <a href="/issues/raise/" class="btn btn-primary">Raise an Issue</a>
+        <a href="/issues/" class="btn btn-outline">View All Issues</a>
+    </div>
+</div>
+{% endblock %}
