@@ -86,9 +86,22 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'postgresql': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'CivicNode_db',  # Replace with your PostgreSQL database name
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'oracle': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': 'localhost:1521/FREEPDB1', # Oracle SID or TNS alias name
+        'USER': 'albin',
+        'PASSWORD': 'albin',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
