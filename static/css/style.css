@@ -1,16 +1,19 @@
 /* CivicNode - Modern Design System */
 
 :root {
-    --primary: #0d9488;
-    /* Midnight Teal */
-    --primary-hover: #0f766e;
-    --primary-rgb: 13, 148, 136;
+    --primary: #166534;
+    /* Forest Green */
+    --primary-hover: #14532d;
+    --primary-rgb: 22, 101, 52;
     --secondary: #64748b;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --background: #f8fafc;
-    /* Very light slate for airy feel with contrast */
+    --success: #22c55e;
+    --danger: #be123c;
+    --warning: #ca8a04;
+    --accent: #e06b53;
+    --accent-hover: #c4553e;
+    --accent-rgb: 224, 107, 83;
+    --background: #fffaf0;
+    /* Warm Ivory */
     --card-bg: #ffffff;
     --text-main: #0f172a;
     --text-muted: #64748b;
@@ -21,13 +24,13 @@
 }
 
 [data-theme="dark"] {
-    --background: #0f172a;
-    --card-bg: #1e293b;
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
-    --border: #334155;
-    --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3);
-    --nav-bg: rgba(15, 23, 42, 0.7);
+    --background: #121212;
+    --card-bg: #262626;
+    --text-main: #f5f5f5;
+    --text-muted: #a3a3a3;
+    --border: #404040;
+    --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+    --nav-bg: rgba(18, 18, 18, 0.8);
 }
 
 * {
@@ -90,7 +93,7 @@ nav a {
 }
 
 nav a:hover {
-    color: var(--primary);
+    color: var(--accent);
 }
 
 nav b a {
@@ -229,13 +232,13 @@ nav button {
 
 .badge-emergency {
     background: #fef2f2 !important;
-    color: #ef4444 !important;
+    color: var(--danger) !important;
     border: 1px solid #fee2e2;
 }
 
 .badge-success {
     background: #f0fdf4 !important;
-    color: #10b981 !important;
+    color: var(--success) !important;
     border: 1px solid #dcfce7;
 }
 
@@ -262,18 +265,18 @@ nav button {
 }
 
 [data-theme="dark"] .badge-status {
-    background: #0c4a6e !important;
-    color: #bae6fd !important;
+    background: #422006 !important;
+    color: #fde047 !important;
 }
 
 [data-theme="dark"] .badge-success {
-    background: #064e3b !important;
-    color: #a7f3d0 !important;
+    background: #14532d !important;
+    color: #86efac !important;
 }
 
 [data-theme="dark"] .badge-emergency {
-    background: #7f1d1d !important;
-    color: #fecaca !important;
+    background: #450a0a !important;
+    color: #fca5a5 !important;
 }
 
 /* Typography Utilities */
@@ -381,21 +384,21 @@ nav button {
 }
 
 .btn-primary {
-    background: var(--primary);
+    background: var(--accent);
     color: white;
-    box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+    box-shadow: 0 4px 6px -1px rgba(var(--accent-rgb), 0.2);
 }
 
 .btn-primary:hover {
-    background: var(--primary-hover);
+    background: var(--accent-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
 }
 
 .btn-outline {
     background: transparent;
-    border: 1px solid var(--primary);
-    color: var(--primary);
+    border: 1px solid var(--accent);
+    color: var(--accent);
 }
 
 /* Forms */
@@ -495,7 +498,7 @@ hr {
 }
 
 .theme-toggle:hover {
-    background: var(--primary);
+    background: var(--accent);
     color: white;
 }
 
