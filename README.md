@@ -1,86 +1,137 @@
-# CivicNode
+<div align="center">
+  <h1>🏙️ CivicNode</h1>
+  <p><em>Empowering communities to report, track, and resolve local civic issues.</em></p>
+  
+  ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+  ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
+  ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+  ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+  ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+</div>
 
-CivicNode is a web application built with Django that empowers community members to report and track local civic issues. Users can raise issues based on specific categories (e.g., emergency, infrastructure), upvote existing issues, and track their resolution status. Administrators and staff can manage, assign, and update the status of these issues to keep the community informed.
+---
 
-## Features
+## 📖 About The Project
 
-- **User Authentication**: Secure login and registration system with role-based access control (User, Staff, Admin).
-- **Issue Reporting**: Users can easily raise issues by providing a title, description, location, and selecting a category.
-- **Issue Tracking**: A centralized dashboard to view active and resolved community issues.
-- **Upvoting**: Community members can upvote issues to increase their visibility and prioritization.
-- **Staff Assignment & Management**: Admins can assign specific issues to staff members who can update their status (Pending, In Progress, Resolved) and provide remarks.
+**CivicNode** is a robust, role-based community issue tracking platform built with the Django web framework. 
 
-## Technology Stack
+Its primary goal is to empower local citizens to report problems in their area—such as infrastructure damage, sanitation issues, or emergencies—while giving local authorities and staff the tools they need to track, manage, and resolve them efficiently.
 
-- **Backend Framework**: Django
-- **Database**: PostgreSQL
-- **Frontend**: HTML/CSS/JS (Django Templates)
+This project was built to demonstrate full-stack development capabilities, relational database design, user authentication, and role-based access control (RBAC).
 
-## Getting Started
+---
+
+## ✨ Key Features
+
+- **🛡️ Role-Based Access Control (RBAC):** Three distinct user roles with specific permissions:
+  - **Citizens:** Can register, report issues, upvote existing ones, and track progress on a personalized dashboard.
+  - **Staff Members:** Have a dedicated dashboard for assigned issues, allowing them to update statuses (Pending, In Progress, Resolved) and leave public remarks.
+  - **Administrators:** Full system control via the Django Admin Panel to manage users, categories, and delegate issues to staff.
+- **📍 Comprehensive Issue Reporting:** Users can submit detailed reports including title, description, categorized tags, and specific locations.
+- **👍 Community Upvoting:** Allows the community to prioritize urgent issues by upvoting them, pushing them higher up the queue.
+- **🔔 Real-Time Notifications:** Provides immediate user feedback for actions (success, error, warning) via a custom notification system.
+
+---
+
+## 🛠️ Technology Stack
+
+- **Backend:** Python, Django
+- **Database:** PostgreSQL (Production) / SQLite (Development)
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript, Django Templates
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to get a local copy up and running.
 
 ### Prerequisites
 
 - Python 3.x
-- pip (Python package installer)
+- PostgreSQL (if running in production mode) or SQLite (built-in)
 
 ### Installation
 
-1. **Clone the repository:**
+1. **Clone the repository**
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/yourusername/CivicNode.git
    cd CivicNode
    ```
 
-2. **Create a virtual environment (recommended):**
+2. **Create and activate a virtual environment**
    ```bash
+   # Windows
    python -m venv venv
-   # On Windows use: venv\Scripts\activate
-   # On macOS/Linux use: source venv/bin/activate
+   venv\Scripts\activate
+   
+   # macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
    ```
 
-3. **Install the dependencies:**
-   Make sure to install the required packages (e.g., Django, python-dotenv).
+3. **Install Dependencies**
    ```bash
-   pip install django python-dotenv
-   # Or using requirements.txt if available: pip install -r requirements.txt
+   pip install django python-dotenv psycopg2
+   # Or via requirements.txt if present
+   # pip install -r requirements.txt
    ```
 
-4. **Environment Variables:**
-   - Copy the `.env.example` file to a new file named `.env`.
-   - Update the variables inside the `.env` file, such as `SECRET_KEY`.
-   ```bash
-   cp .env.example .env
+4. **Environment Variables**
+   Create a `.env` file in the root directory and add your secret key and database credentials:
+   ```env
+   SECRET_KEY=your_secure_secret_key_here
    ```
 
-5. **Apply Database Migrations:**
+5. **Apply Database Migrations**
    ```bash
    python manage.py makemigrations
    python manage.py migrate
    ```
 
-6. **Create a Superuser:**
-   To access the admin panel, create a superuser account:
+6. **Create a Superuser (Admin Account)**
    ```bash
    python manage.py createsuperuser
    ```
 
-7. **Run the Development Server:**
+7. **Run the Development Server**
    ```bash
    python manage.py runserver
    ```
-   The application will be accessible at `http://127.0.0.1:8000/`.
+   *Visit `http://127.0.0.1:8000/` in your browser.*
 
-## Project Structure
+---
 
-- `accounts/`: Handles user authentication, registration, and profiles.
-- `dashboard/`: Manages the landing page and user-specific dashboards based on roles.
-- `issues/`: Core application for raising, viewing, upvoting, and managing civic issues.
-- `CivicNode/`: Project configuration, settings, and root URL routing.
-- `templates/`: Contains all HTML templates for the frontend.
-- `static/`: Contains static assets like CSS, JavaScript, and images.
+## 🗺️ Application Architecture & Site Map
 
-## Usage
+The application is structured into modular Django apps: `accounts`, `dashboard`, and `issues`.
 
-- **Regular Users**: Can register, log in, view the dashboard, raise new issues, upvote existing issues, and track community problems.
-- **Staff**: Can log in, view their assigned issues, and update the status of issues they are working on (with remarks).
-- **Admins (Superuser)**: Have full control over the platform. They can access the Django admin panel, manage users, categories, and assign issues to specific staff members.
+### Site Map Breakdown:
+- **Public & User Dashboard**
+  - `/` - Landing Page
+  - `/dashboard/` - User Dashboard
+- **Accounts & Authentication**
+  - `/accounts/register/` - Create a new account
+  - `/accounts/login/` - User login
+  - `/accounts/logout/` - User logout
+  - `/accounts/profile/` - View/Edit user profile
+  - `/accounts/password-change/` - Change account password
+- **Issue Management**
+  - `/issues/` - Browse all community issues
+  - `/issues/raise/` - Report a new issue
+  - `/issues/assigned/` - View assigned issues *(Staff only)*
+  - `/issues/<id>/update/` - Update issue status and remarks *(Staff only)*
+  - `/issues/<id>/assign/` - Delegate issue to staff *(Admin only)*
+  - `/issues/<id>/upvote/` - Upvote an issue
+- **Administration**
+  - `/admin/` - Secure Django Admin Panel
+
+---
+
+## 🤝 Contact / Resume Links
+
+**[Your Name]**  
+- **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/yourusername)  
+- **GitHub:** [Your GitHub Profile](https://github.com/yourusername)  
+- **Portfolio:** [Your Portfolio Website](https://yourwebsite.com)  
+
+*This project is featured in my resume as a showcase of full-stack web development and backend architecture.*
