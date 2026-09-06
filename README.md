@@ -126,12 +126,3 @@ The application is structured into modular Django apps: `accounts`, `dashboard`,
   - `/admin/` - Secure Django Admin Panel
 
 ---
-
-## 🤝 Contact / Resume Links
-
-**[Your Name]**  
-- **LinkedIn:** [Your LinkedIn Profile](https://linkedin.com/in/yourusername)  
-- **GitHub:** [Your GitHub Profile](https://github.com/yourusername)  
-- **Portfolio:** [Your Portfolio Website](https://yourwebsite.com)  
-
-*This project is featured in my resume as a showcase of full-stack web development and backend architecture.*
